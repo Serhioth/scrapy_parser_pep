@@ -1,7 +1,7 @@
 BOT_NAME = 'pep_parse'
-
-SPIDER_MODULES = ['pep_parse.spiders']
-NEWSPIDER_MODULE = 'pep_parse.spiders'
+NEWSPIDER_MODULE = f'{BOT_NAME}.spiders'
+SPIDER_MODULES = [NEWSPIDER_MODULE]
+FILE_FORMAT = 'csv'
 
 ROBOTSTXT_OBEY = True
 
@@ -11,7 +11,7 @@ ITEM_PIPELINES = {
 
 FEEDS = {
     'results/pep_%(time)s.csv': {
-        'format': 'csv',
+        'format': FILE_FORMAT,
         'encoding': 'utf8',
         'fields': ['number', 'name', 'status'],
         'overwrite': True
