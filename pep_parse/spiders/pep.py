@@ -1,14 +1,18 @@
+from typing import Iterable, Tuple
+
 import scrapy
 
 from pep_parse.items import PepParseItem
 
 
 class PepSpider(scrapy.Spider):
-    name = 'pep'
-    allowed_domains = ['peps.python.org']
-    start_urls = ['https://peps.python.org/']
+    name: str = 'pep'
+    allowed_domains: Tuple = ('peps.python.org',)
+    start_urls: Tuple = ('https://peps.python.org/',)
 
-    def parse(self, response):
+    def parse(
+        self, response: scrapy.http.response
+    ) -> Iterable[scrapy.Request]:
         pep_links = response.xpath(
             '//table[@class="pep-zero-table docutils align-default"]'
             '/tbody/tr/td/a[@class="pep reference internal"]/@href'
@@ -17,7 +21,7 @@ class PepSpider(scrapy.Spider):
         for pep_link in pep_links:
             yield response.follow(pep_link, callback=self.parse_pep)
 
-    def parse_pep(self, response):
+    def parse_pep(self, response: scrapy.http.response) -> PepParseItem:
         pep_content = response.xpath('//section[@id="pep-content"]')
         page_title = pep_content.xpath('h1[@class="page-title"]/text()').get()
         dl_tag = pep_content.xpath('dl[@class="rfc2822 field-list simple"]')

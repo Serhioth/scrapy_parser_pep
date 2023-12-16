@@ -2,7 +2,10 @@ import csv
 from datetime import datetime as dt
 from pathlib import Path
 
-from pep_parse.settings import FILE_FORMAT
+import scrapy
+
+from pep_parse.items import PepParseItem
+from pep_parse.settings import CSV_FILE_FORMAT
 
 BASE_DIR = Path(__file__).parent.parent
 RESULT_DIR = 'results'
@@ -23,23 +26,32 @@ PEP_STATUS_COUNTER = {
 
 
 class PepParsePipeline:
-    def open_spider(self, spider):
+    def open_spider(self, spider: scrapy.Spider) -> None:
         self.status_counter = PEP_STATUS_COUNTER
 
-    def process_item(self, item, spider):
+    def process_item(
+        self,
+        item: PepParseItem,
+        spider: scrapy.Spider
+    ) -> PepParseItem:
         self.status_counter[item['status']] += 1
         self.status_counter['Total'] += 1
 
         return item
 
-    def close_spider(self, spider):
-        status_summary_filename = f'status_summary_{DATETIME}.{FILE_FORMAT}'
+    def close_spider(
+        self,
+        spider: scrapy.Spider
+    ) -> None:
+        status_summary_filename = (
+            f'status_summary_{DATETIME}.{CSV_FILE_FORMAT}'
+        )
         results_path = BASE_DIR / RESULT_DIR
         results_path.mkdir(parents=True, exist_ok=True)
         status_summary_file_path = results_path / status_summary_filename
 
         with open(status_summary_file_path, 'w', newline='') as file:
-            fieldnames = ['Статус', 'Количество']
+            fieldnames = ('Статус', 'Количество',)
             writer = csv.DictWriter(file, fieldnames=fieldnames)
 
             writer.writeheader()
