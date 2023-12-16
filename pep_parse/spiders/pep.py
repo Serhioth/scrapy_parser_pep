@@ -1,4 +1,4 @@
-from typing import Iterable, Tuple
+from typing import Iterable
 
 import scrapy
 
@@ -7,8 +7,8 @@ from pep_parse.items import PepParseItem
 
 class PepSpider(scrapy.Spider):
     name: str = 'pep'
-    allowed_domains: Tuple = ('peps.python.org',)
-    start_urls: Tuple = ('https://peps.python.org/',)
+    allowed_domains: list = ['peps.python.org']
+    start_urls: list = ['https://peps.python.org/']
 
     def parse(
         self, response: scrapy.http.response
